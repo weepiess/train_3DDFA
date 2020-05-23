@@ -34,12 +34,12 @@ class PRnet_model(BaseModel):
         self.input = x
 
     def eval_input(self,input_eval,gt_eval):
-        x_eval = torch.from_numpy(input_eval).cpu().float()
-        y_eval = torch.from_numpy(gt_eval).cpu()
+        x_eval = torch.from_numpy(input_eval).cuda().float()
+        y_eval = torch.from_numpy(gt_eval).cuda().float()
         a_eval=Variable(y_eval,requires_grad=False)
-        target_eval = a_eval.cpu().float()
+        target_eval = a_eval
         with torch.no_grad():
-            output_eval = self.model(x_eval).cpu()
+            output_eval = self.model(x_eval)
             loss_eval = self.criterion(output_eval,target_eval)
         return loss_eval
 
