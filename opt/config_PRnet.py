@@ -10,36 +10,26 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected')
     
-class TrainOptions(BaseOptions):
+class TrainOptions_PRnet(BaseOptions):
     """This class includes training options.
     It also includes shared options defined in BaseOptions.
     """
 
     def initialize(self, parser_):
-        parser_.add_argument('--train_path',default='/media/weepies/Seagate Backup Plus Drive/3DMM/posnet/full_data256_256.txt',type=str)
-        parser_.add_argument('--eval_path',default='/media/weepies/Seagate Backup Plus Drive/3DMM/posnet/full_data256_256_eval.txt',type=str)
+        super(TrainOptions_PRnet, self).initialize(parser_)
+        parser_.add_argument('--train_path',default='/media/weepies/Seagate Backup Plus Drive/3DMM/3d-pixel/train_final.txt',type=str)
+        parser_.add_argument('--eval_path',default='/media/weepies/Seagate Backup Plus Drive/3DMM/3d-pixel/subt_eva.txt',type=str)
 
         parser_.add_argument('--epochs', default=100, type=int)
         parser_.add_argument('--start-epoch', default=1, type=int)
-        parser_.add_argument('--batch_size',default='2',type=int)
         parser_.add_argument('--batch_size_eval',default='64',type=int)
-
-        parser_.add_argument('--base-lr', '--learning-rate', default=0.00001, type=float)
-        parser_.add_argument('--momentum', default=0.9, type=float, metavar='M',
-                            help='momentum')
-        parser_.add_argument('--weight-decay', '--wd', default=5e-4, type=float)
-        parser_.add_argument('--print-freq', '-p', default=20, type=int)
-
+        parser_.add_argument('--mask_path',default='./Data/uv-data/uv_weight_mask_gdh.png',type=str)
         parser_.add_argument('--devices_id', default='0', type=str)
+        parser_.add_argument('--base-lr', '--learning-rate', default=0.0001, type=float)
+        parser_.add_argument('--batch_size', default=16, type=int)
 
-        parser_.add_argument('--milestones', default='3000,4000', type=str)
-
-        parser_.add_argument('--warmup', default=500, type=int)
-
-        parser_.add_argument('--loss_type', default='mse', type=str)
         self.initialized = True
         return parser_
-
 
     def get_config(self):
         """Initialize our parser with basic options(only once).
@@ -56,7 +46,6 @@ class TrainOptions(BaseOptions):
 
         # set gpu ids, transfrom string to int number
             # args.devices_id = [int(d) for d in args.devices_id.split(',')]
-        config.milestones = [int(m) for m in config.milestones.split(',')]
         str_ids = config.devices_id.split(',')
         config.devices_id = []
         for str_id in str_ids:
